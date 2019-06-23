@@ -36,22 +36,92 @@ public class MainActivity extends AppCompatActivity {
         final float pxHeight = displayMetrics.heightPixels + getNavbarHeight();
         final float pxWidth = displayMetrics.widthPixels;
 
-        Board board = Board.getInstance();
+        final Board board = Board.getInstance();
         board.init(pxWidth, pxHeight, density);
-        final int gapBtm = (int) board.getGapBtm();
-        final int oppBtm = (int) board.getOppBtm();
-        final int midBtm = (int) board.getMidBtm();
-        final int playerBtm = (int) board.getPlayerBtm();
-        final int sectionWidth = (int) round(pxWidth);
-        final int gridItemSize = (int) board.getGridItemSize();
-        drawBoardBackground(gapBtm, oppBtm, midBtm, playerBtm, sectionWidth, gridItemSize);
+        drawBoardBackground(board);
+        drawInitGridBoard(board);
+    }
 
-        SurfaceView gridItemBoard = findViewById(R.id.gridItemBoard);
 
-        // TODO: MainActivity cannot keep this
-        final GridItem initGrid[][] = board.getGrid();
-        final int nRows = board.getNumRows();
-        final int nCols = board.getNumColumns();
+    public void drawBoardBackground(final Board board)
+        {
+            board.initBoard(ResourcesCompat.getColor(getResources(), R.color.gapBlue, null));
+            final SurfaceView boardBackground = findViewById(R.id.boardBackground);
+
+            boardBackground.getHolder().addCallback(new SurfaceHolder.Callback() {
+                @Override
+                public void surfaceCreated(SurfaceHolder surfaceHolder) {
+                    surfaceHolder.setFormat(PixelFormat.RGBA_8888);
+                    Canvas canvas = surfaceHolder.lockCanvas();
+                    Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+                    int gapBtm = (int) board.getGapBtm();
+                    int oppBtm = (int) board.getOppBtm();
+                    int midBtm = (int) board.getMidBtm();
+                    int playerBtm = (int) board.getPlayerBtm();
+                    int gridItemSize = (int) board.getGridItemSize();
+                    int sectionWidth = gridItemSize * board.getNumColumns();
+
+                    int paleYellow, paleBlue, paleOrange, palePurple, white;
+                    paleBlue = ResourcesCompat.getColor(getResources(), R.color.paleBlue, null);
+                    paleYellow = ResourcesCompat.getColor(getResources(), R.color.paleYellow, null);
+                    palePurple = ResourcesCompat.getColor(getResources(), R.color.palePurple, null);
+                    paleOrange = ResourcesCompat.getColor(getResources(), R.color.paleOrange, null);
+                    white = ResourcesCompat.getColor(getResources(), R.color.white, null);
+
+                    // if the dimensions of our board do not match the ratio of the device, center
+                    if (gapBtm != 0) {
+                        int gapYellow = ResourcesCompat.getColor(getResources(), R.color.gapYellow, null);
+                        mPaint.setColor(gapYellow);
+                        Rect oppGap = new Rect(0, 0, sectionWidth, gapBtm);
+                        canvas.drawRect(oppGap, mPaint);
+                    }
+
+                    mPaint.setColor(paleYellow);
+                    Rect oppBackground = new Rect(0, gapBtm, sectionWidth, oppBtm);
+                    canvas.drawRect(oppBackground, mPaint);
+
+                    Rect intermediate = new Rect(0, oppBtm, sectionWidth, midBtm);
+                    mPaint.setShader(new LinearGradient(0, oppBtm, 0, midBtm, palePurple, paleOrange, Shader.TileMode.CLAMP));
+                    canvas.drawRect(intermediate, mPaint);
+                    mPaint.reset();
+
+                    mPaint.setColor(white);
+                    mPaint.setAlpha(90);
+                    mPaint.setStrokeWidth(gridItemSize / 3);
+                    int midpoint = (int) round(oppBtm + (midBtm - oppBtm) / 2);
+                    canvas.drawLine(0, midpoint, sectionWidth, midpoint, mPaint);
+                    mPaint.reset();
+
+                    mPaint.setColor(paleBlue);
+                    Rect playerBackground = new Rect(0, midBtm, sectionWidth, playerBtm);
+                    canvas.drawRect(playerBackground, mPaint);
+
+                    if (gapBtm != 0) {
+                        int gapBlue = ResourcesCompat.getColor(getResources(), R.color.gapBlue, null);
+                        int bottom = playerBtm + gapBtm;
+                        mPaint.setColor(gapBlue);
+                        Rect playerGap = new Rect(0, playerBtm, sectionWidth, bottom);
+                        canvas.drawRect(playerGap, mPaint);
+                    }
+
+                    surfaceHolder.unlockCanvasAndPost(canvas);
+                }
+
+                @Override
+                public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+
+                }
+            });
+        }
+
+    public void drawInitGridBoard(final Board board) {
+        final SurfaceView gridItemBoard = findViewById(R.id.boardBackground);
         gridItemBoard.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
@@ -59,83 +129,15 @@ public class MainActivity extends AppCompatActivity {
                 Canvas canvas = surfaceHolder.lockCanvas();
                 Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-                Drawing drawing = new Drawing(nRows, nCols);
-                drawing.initDraw(initGrid, canvas);
+                Drawing drawing = new Drawing(board.getNumRows(), board.getNumColumns());
+                drawing.initDraw(board.getGrid(), canvas);
 
                 // at start adjust canvas down to account for gap
-                canvas.translate(0, gapBtm);
+                canvas.translate(0, board.getGapBtm());
 
                 surfaceHolder.unlockCanvasAndPost(canvas);
                 // at very end undo canvas translation
                 canvas.restore();
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
-            }
-        });
-    }
-
-    public void drawBoardBackground(final int gapBtm, final int oppBtm, final int midBtm, final int playerBtm, final int sectionWidth, final int gridItemSize) {
-        final SurfaceView boardBackground = findViewById(R.id.boardBackground);
-
-        boardBackground.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder surfaceHolder) {
-                surfaceHolder.setFormat(PixelFormat.RGBA_8888);
-                Canvas canvas = surfaceHolder.lockCanvas();
-                Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
-                int paleYellow, paleBlue, paleOrange, palePurple, white;
-                paleBlue = ResourcesCompat.getColor(getResources(), R.color.paleBlue, null);
-                paleYellow = ResourcesCompat.getColor(getResources(), R.color.paleYellow, null);
-                palePurple = ResourcesCompat.getColor(getResources(), R.color.palePurple, null);
-                paleOrange = ResourcesCompat.getColor(getResources(), R.color.paleOrange, null);
-                white = ResourcesCompat.getColor(getResources(), R.color.white, null);
-
-                // if the dimensions of our board do not match the ratio of the device, center
-                if (gapBtm != 0) {
-                    int gapYellow = ResourcesCompat.getColor(getResources(), R.color.gapYellow, null);
-                    mPaint.setColor(gapYellow);
-                    Rect oppGap = new Rect(0, 0, sectionWidth, gapBtm);
-                    canvas.drawRect(oppGap, mPaint);
-                }
-
-                mPaint.setColor(paleYellow);
-                Rect oppBackground = new Rect(0, gapBtm, sectionWidth, oppBtm);
-                canvas.drawRect(oppBackground, mPaint);
-
-                Rect intermediate = new Rect(0, oppBtm, sectionWidth, midBtm);
-                mPaint.setShader(new LinearGradient(0, oppBtm, 0, midBtm, palePurple, paleOrange, Shader.TileMode.CLAMP));
-                canvas.drawRect(intermediate, mPaint);
-                mPaint.reset();
-
-                mPaint.setColor(white);
-                mPaint.setAlpha(90);
-                mPaint.setStrokeWidth(gridItemSize/3);
-                int midpoint = (int) round(oppBtm+(midBtm-oppBtm)/2);
-                canvas.drawLine(0, midpoint, sectionWidth, midpoint, mPaint);
-                mPaint.reset();
-
-                mPaint.setColor(paleBlue);
-                Rect playerBackground = new Rect(0, midBtm, sectionWidth, playerBtm);
-                canvas.drawRect(playerBackground, mPaint);
-
-                if (gapBtm != 0) {
-                    int gapBlue = ResourcesCompat.getColor(getResources(), R.color.gapBlue, null);
-                    int bottom = playerBtm+gapBtm;
-                    mPaint.setColor(gapBlue);
-                    Rect playerGap = new Rect(0, playerBtm, sectionWidth, bottom);
-                    canvas.drawRect(playerGap, mPaint);
-                }
-
-                surfaceHolder.unlockCanvasAndPost(canvas);
             }
 
             @Override
