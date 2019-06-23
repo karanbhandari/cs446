@@ -1,6 +1,8 @@
 package com.kaze.jailbreakpong;
 import android.graphics.Canvas;
 
+import static java.lang.Math.ceil;
+import static java.lang.Math.floor;
 import static java.lang.Math.round;
 import java.util.ArrayList;
 
@@ -10,7 +12,7 @@ public class Board {
     private float pxHeight, pxWidth, dpi, gap; // screen dimensions
     private float gridItemSize; // in px, the width/height of each square grid
     private int nRows, nCols; // number of GridItems horizontally and vertically on screen
-    private int gapBtm, oppBtm, midBtm, playerBtm, sectionHeight;
+    private int gapBtm, oppBtm, midBtm, playerBtm, sectionHeight, midHeight;
     private ArrayList<ArrayList<GridItem>> grid = new ArrayList<>();
 
     private Board() {}
@@ -20,15 +22,21 @@ public class Board {
         pxWidth = dimX;
         pxHeight = dimY;
         dpi = density;  // need for drawing in pixels
-        nCols = 27; // default is 27 GridItems horizontally across
-        nRows = 48; // default is 48 GridItems vertically across
+        nCols = 12; // default is 18 GridItems horizontally across
+        nRows = 21; // default is 32 GridItems vertically across
         gridItemSize = dimX/nCols; // the px width of each GridItem
         gap = pxHeight - nRows * gridItemSize;
 
-        sectionHeight = (int) round(nRows/3 * gridItemSize);
+        int plyNRows = (int) ceil((float) nRows/3);
+        sectionHeight = (int) (plyNRows * gridItemSize);
+        int midNRows = nRows - plyNRows * 2;
+        midHeight = (int) (midNRows * gridItemSize);
+
+
+
         gapBtm = round(gap/2);
         oppBtm = gapBtm + sectionHeight;
-        midBtm = oppBtm + sectionHeight;
+        midBtm = oppBtm + midHeight;
         playerBtm = midBtm + sectionHeight;
 
         for(int col = 0; col < nCols; col++) {
@@ -116,7 +124,7 @@ public class Board {
     }
 
     public void initBoard(int color) {
-        BrickFactory bf= new BrickFactory(23, 23, color, "LowerLeftTriangle", (int) gridItemSize);
+        BrickFactory bf= new BrickFactory(11, 17, color, "LowerLeftTriangle", (int) gridItemSize);
 //        for(int r = 0; r < nRows; r++) {
 //            for ( int c = 0; c < nCols; c++) {
 //                if( r == 23 && c == 23) {
@@ -124,7 +132,7 @@ public class Board {
 //                }
 //            }
 //        }
-        grid.get(23).set(23, bf.getItem());
+        grid.get(11).set(17, bf.getItem());
 
     }
 }

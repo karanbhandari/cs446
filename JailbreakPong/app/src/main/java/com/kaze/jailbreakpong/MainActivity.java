@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void drawBoardBackground(final Board board)
         {
-            board.initBoard(ResourcesCompat.getColor(getResources(), R.color.gapBlue, null));
+            board.initBoard(ResourcesCompat.getColor(getResources(), R.color.gradientBlueLight, null));
             final SurfaceView boardBackground = findViewById(R.id.boardBackground);
 
             boardBackground.getHolder().addCallback(new SurfaceHolder.Callback() {
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
                     mPaint.setColor(white);
                     mPaint.setAlpha(90);
-                    mPaint.setStrokeWidth(gridItemSize / 3);
+                    mPaint.setStrokeWidth(gridItemSize / 6);
                     int midpoint = (int) round(oppBtm + (midBtm - oppBtm) / 2);
                     canvas.drawLine(0, midpoint, sectionWidth, midpoint, mPaint);
                     mPaint.reset();
@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void drawInitGridBoard(final Board board) {
         final SurfaceView gridItemBoard = findViewById(R.id.boardBackground);
+        gridItemBoard.setZOrderOnTop(true);
         gridItemBoard.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder surfaceHolder) {
@@ -129,14 +130,15 @@ public class MainActivity extends AppCompatActivity {
                 Canvas canvas = surfaceHolder.lockCanvas();
                 Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
-                Drawing drawing = new Drawing(board.getNumRows(), board.getNumColumns());
-                drawing.initDraw(board.getGrid(), canvas);
-
                 // at start adjust canvas down to account for gap
                 canvas.translate(0, board.getGapBtm());
 
+                Drawing drawing = new Drawing(board.getNumRows(), board.getNumColumns());
+                drawing.initDraw(board.getGrid(), canvas);
+
                 surfaceHolder.unlockCanvasAndPost(canvas);
                 // at very end undo canvas translation
+                canvas.save();
                 canvas.restore();
             }
 
