@@ -1,6 +1,7 @@
 package com.kaze.jailbreakpong;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import android.content.res.Resources;
@@ -34,6 +35,8 @@ import static java.lang.Math.round;
 
 public class MainActivity extends AppCompatActivity {
 
+    ConstraintLayout layout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,13 +66,17 @@ public class MainActivity extends AppCompatActivity {
         board.initBoard(fl, getApplicationContext(), playerTileColorLight, playerTileColorDark, opponentTileColorLight, opponentTileColorDark);
         //drawGridItems(board);
 
-      // create a ball
-      Ball ball = Helper.initBall(this, 0, board.getGapBtm(), 100, 1f);
-      ball.addAnimators(board.getGapBtm(), board.getPlayerBtm());
+        // create a ball
+        Ball ball = Helper.initBall(this, 0, board.getGapBtm(), 100, 1f);
+        ball.addAnimators(board.getGapBtm(), board.getPlayerBtm());
 
-      // add to the layout
-      FrameLayout layout = findViewById(R.id.FrameLayout);
-      layout.addView(ball);
+        // add to the layout
+        FrameLayout layout = findViewById(R.id.FrameLayout);
+        layout.addView(ball);
+
+        Paddle paddle = new Paddle(getApplicationContext(), 200, 200);
+        layout = findViewById(R.id.my_layout);
+        layout.addView(paddle);
     }
 
     @Override
