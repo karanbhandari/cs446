@@ -5,12 +5,8 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-
-import androidx.appcompat.widget.AppCompatImageView;
-
 
 import androidx.appcompat.widget.AppCompatImageView;
 
@@ -25,7 +21,6 @@ public class Paddle extends AppCompatImageView {
             switch (event.getAction()) {
 
                 case MotionEvent.ACTION_DOWN:
-
                     dX = view.getX() - event.getRawX();
                     break;
 
