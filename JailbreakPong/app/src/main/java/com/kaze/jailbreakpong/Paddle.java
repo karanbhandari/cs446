@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
+
 import androidx.appcompat.widget.AppCompatImageView;
 
 import java.util.Observable;
@@ -25,6 +26,7 @@ public class Paddle extends AppCompatImageView implements Observer {
             switch (event.getAction()) {
 
                 case MotionEvent.ACTION_DOWN:
+
                     dX = view.getX() - event.getRawX();
                     break;
 
