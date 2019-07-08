@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
+
 import androidx.appcompat.widget.AppCompatImageView;
 
 public class Paddle extends AppCompatImageView {
@@ -21,6 +22,7 @@ public class Paddle extends AppCompatImageView {
             switch (event.getAction()) {
 
                 case MotionEvent.ACTION_DOWN:
+
                     dX = view.getX() - event.getRawX();
                     break;
 
