@@ -1,6 +1,7 @@
 package com.kaze.jailbreakpong;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import android.content.res.Resources;
@@ -33,6 +34,8 @@ import android.widget.LinearLayout;
 import static java.lang.Math.round;
 
 public class MainActivity extends AppCompatActivity {
+
+    ConstraintLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +79,10 @@ public class MainActivity extends AppCompatActivity {
 //      // add to the layout
 //      LinearLayout layout = (LinearLayout) findViewById(R.id.Layout);
 //      layout.addView(ball);
+
+        Paddle paddle = new Paddle(getApplicationContext(), 200, 200);
+        layout = findViewById(R.id.my_layout);
+        layout.addView(paddle);
     }
 
     @Override
