@@ -75,11 +75,11 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(ball);
 
         Paddle paddle1 = new Paddle(getApplicationContext(), 200, board.getMidBtm());
-        layout = findViewById(R.id.my_layout);
+        layout = findViewById(R.id.FrameLayout);
         layout.addView(paddle1);
 
         Paddle paddle2 = new Paddle(getApplicationContext(), 200, board.getOppBtm());
-        layout = findViewById(R.id.my_layout);
+        layout = findViewById(R.id.FrameLayout);
         layout.addView(paddle2);
     }
 
