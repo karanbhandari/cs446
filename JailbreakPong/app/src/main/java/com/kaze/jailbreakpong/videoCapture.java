@@ -55,6 +55,7 @@ public class videoCapture extends AppCompatActivity {
 
     // View
     private ToggleButton toggleButton;
+    private VideoView videoView;
     private String videoUri = "";
 
 
