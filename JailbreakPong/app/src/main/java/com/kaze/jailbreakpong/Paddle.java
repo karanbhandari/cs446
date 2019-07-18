@@ -3,11 +3,6 @@ package com.kaze.jailbreakpong;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-<<<<<<< HEAD
-=======
-
-import android.util.Log;
->>>>>>> made changes for paddle
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,12 +10,11 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
 import androidx.appcompat.widget.AppCompatImageView;
-<<<<<<< HEAD
-=======
 
->>>>>>> made changes for paddle
+import java.util.Observable;
+import java.util.Observer;
 
-public class Paddle extends AppCompatImageView {
+public class Paddle extends AppCompatImageView implements Observer {
 
     int left, top,right,bottom;
     float dX = 0;
@@ -59,6 +53,7 @@ public class Paddle extends AppCompatImageView {
         this.setImageResource(R.drawable.paddle);
         this.setX(x);
         this.setY(y);
+        Helper.addObserver(this);
     }
 
     public Paddle(Context context, AttributeSet attrs,float x, float y) {
@@ -90,4 +85,14 @@ public class Paddle extends AppCompatImageView {
         return true;
     }
 
+    @Override
+    public void update(Observable observable, Object o) {
+        Board.State state = Helper.getGameState();
+
+        if (state == Board.State.BUILD) {
+            this.setVisibility(GONE);
+        } else {
+            this.setVisibility(VISIBLE);
+        }
+    }
 }
