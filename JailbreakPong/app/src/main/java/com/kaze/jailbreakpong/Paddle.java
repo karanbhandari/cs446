@@ -3,22 +3,12 @@ package com.kaze.jailbreakpong;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
-<<<<<<< HEAD
-=======
-
-import android.util.Log;
->>>>>>> made changes for paddle
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
 import androidx.appcompat.widget.AppCompatImageView;
-<<<<<<< HEAD
-=======
-
->>>>>>> made changes for paddle
 
 import java.util.Observable;
 import java.util.Observer;
