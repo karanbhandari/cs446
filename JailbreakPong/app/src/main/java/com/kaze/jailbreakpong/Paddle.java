@@ -101,3 +101,4 @@ public class Paddle extends AppCompatImageView implements Observer {
         }
     }
 }
+
