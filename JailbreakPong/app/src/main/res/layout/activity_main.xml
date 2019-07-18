@@ -18,6 +18,13 @@
             android:layout_height="match_parent"
             app:srcCompat="@android:color/black" />
 
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOn="Stop Recording"
+            android:text="Hello world"
+            android:id="@+id/recording"/>
+
         <SurfaceView
             android:id="@+id/gridItemBoard"
             android:layout_width="match_parent"
