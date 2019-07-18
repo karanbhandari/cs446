@@ -9,17 +9,14 @@ import android.hardware.display.VirtualDisplay;
 import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.View;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -55,7 +52,6 @@ public class videoCapture extends AppCompatActivity {
 
     // View
     private ToggleButton toggleButton;
-    private VideoView videoView;
     private String videoUri = "";
 
 
@@ -73,7 +69,6 @@ public class videoCapture extends AppCompatActivity {
 
         // View
         toggleButton = (ToggleButton) findViewById(R.id.recording);
-        videoView = (VideoView) findViewById(R.id.videoView);
 
         // Event
         toggleButton.setOnClickListener(new View.OnClickListener() {
@@ -113,11 +108,6 @@ public class videoCapture extends AppCompatActivity {
             mediaRecorder.stop();
             mediaRecorder.reset();
             stopRecordScreen();
-
-            // view
-            videoView.setVisibility(View.VISIBLE);
-            videoView.setVideoURI(Uri.parse(videoUri));
-            videoView.start();
         }
     }
 

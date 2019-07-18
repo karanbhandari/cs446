@@ -12,7 +12,6 @@
         android:layout_height="match_parent"
         android:id="@+id/FrameLayout">
 
-<<<<<<< HEAD
         <SurfaceView
             android:id="@+id/boardBackground"
             android:layout_width="match_parent"
@@ -37,7 +36,5 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:srcCompat="@android:color/transparent" />
-=======
->>>>>>> User game/building controls and HUD added with nice animations. Use observer pattern. Investigating navbar issue.
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
