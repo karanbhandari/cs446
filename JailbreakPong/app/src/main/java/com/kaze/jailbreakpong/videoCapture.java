@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.View;
@@ -75,8 +74,6 @@ public class videoCapture extends AppCompatActivity {
         toggleButton = (ToggleButton) findViewById(R.id.recording);
         videoView = (VideoView) findViewById(R.id.videoView);
 
-        Log.d("VIDEOCApyute", " toggle button got");
-
         // Event
         toggleButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -130,7 +127,6 @@ public class videoCapture extends AppCompatActivity {
         }
         virtualDisplay = createVirtualDisplay();
         mediaRecorder.start();
-        Log.d("VideoCapture", "Recording video");
     }
 
     private VirtualDisplay createVirtualDisplay() {
@@ -207,7 +203,6 @@ public class videoCapture extends AppCompatActivity {
     }
 
     private void stopRecordScreen() {
-        Log.d("VideoCapture","VIDEO CAPTURE STOPEED");
         if(virtualDisplay == null) {
             return;
         }
