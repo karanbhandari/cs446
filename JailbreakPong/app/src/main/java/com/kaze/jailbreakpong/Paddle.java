@@ -2,12 +2,10 @@ package com.kaze.jailbreakpong;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 
 import androidx.appcompat.widget.AppCompatImageView;
 
@@ -51,6 +49,7 @@ public class Paddle extends AppCompatImageView implements Observer {
         }
 
     };
+
     public Paddle(Context context, float x, float y, int imgId) {
         super(context);
         init(x, y, imgId);
