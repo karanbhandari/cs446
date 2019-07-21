@@ -352,6 +352,7 @@ public class Board extends Observable {
     }
 
     public void togglePlayPause() {
+        Log.d("BOARD", "togglePlayPause");
         if (state == State.PAUSE) {
             play();
         } else if (state == State.PLAY) {

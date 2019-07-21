@@ -28,8 +28,6 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-import android.widget.ToggleButton;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -83,6 +81,24 @@ public class MainActivity extends AppCompatActivity implements Observer {
         hideSystemUI();
 
         setupBoard();
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                + ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
+
+                Toast.makeText(this, "Permissions", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this, new String[]{
+                        Manifest.permission.RECORD_AUDIO
+                }, REQUEST_PERMISSION);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.RECORD_AUDIO
+                }, REQUEST_PERMISSION);
+            }
+        }
     }
 
     @Override
@@ -153,30 +169,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
         layout.addView(ball);
     }
 
-    // call start recording when the isRecording is called
-
-
-
     public void startRecording() {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                + ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
-
-                Toast.makeText(this, "Permissions", Toast.LENGTH_SHORT).show();
-                ActivityCompat.requestPermissions(this, new String[]{
-                        Manifest.permission.RECORD_AUDIO
-                }, REQUEST_PERMISSION);
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.RECORD_AUDIO
-                }, REQUEST_PERMISSION);
-            }
-        } else {
-            toggleScreenShare();
-        }
+        toggleScreenShare();
     }
 
     private void setupPaddles(){
@@ -231,6 +225,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     private void recordScreen() {
         if(mediaProjection == null) {
+            Helper.togglePlayPause();
             startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE);
             return;
         }
@@ -290,11 +285,11 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         virtualDisplay = createVirtualDisplay();
         mediaRecorder.start();
+
+        Helper.togglePlayPause();
     }
 
     private class MediaProjectionCallback extends MediaProjection.Callback {
-        // Ctrl+O
-
         @Override
         public void onStop() {
             if(Helper.isRecording()) {
