@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ShareActionProvider;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -59,8 +60,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
         ORIENTATION.append(Surface.ROTATION_270, 1800);
     }
 
-    // View
     private String videoUri = "";
+    private ShareActionProvider shareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +81,24 @@ public class MainActivity extends AppCompatActivity implements Observer {
         hideSystemUI();
 
         setupBoard();
+
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                + ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
+
+                Toast.makeText(this, "Permissions", Toast.LENGTH_SHORT).show();
+                ActivityCompat.requestPermissions(this, new String[]{
+                        Manifest.permission.RECORD_AUDIO
+                }, REQUEST_PERMISSION);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.RECORD_AUDIO
+                }, REQUEST_PERMISSION);
+            }
+        }
     }
 
     @Override
@@ -125,12 +144,14 @@ public class MainActivity extends AppCompatActivity implements Observer {
         // create ball and paddle after boardView is completed inflated, to get accurate boundaries
         final ViewTreeObserver viewTreeObserver = boardView.getViewTreeObserver();
         final BoardView ref = boardView;
+        final MainActivity refMain = this;
         if (viewTreeObserver.isAlive()) {
             viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     setupBall();
                     setupPaddles();
+                    Helper.addObserver(refMain);
                     board.initObservers();
                     ref.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
@@ -148,30 +169,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
         layout.addView(ball);
     }
 
-    // call start recording when the isRecording is called
-
-
-
     public void startRecording() {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                + ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
-
-                Toast.makeText(this, "Permissions", Toast.LENGTH_SHORT).show();
-                ActivityCompat.requestPermissions(this, new String[]{
-                        Manifest.permission.RECORD_AUDIO
-                }, REQUEST_PERMISSION);
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.RECORD_AUDIO
-                }, REQUEST_PERMISSION);
-            }
-        } else {
-            toggleScreenShare();
-        }
+        toggleScreenShare();
     }
 
     private void setupPaddles(){
@@ -186,10 +185,12 @@ public class MainActivity extends AppCompatActivity implements Observer {
     }
 
     private void toggleScreenShare() {
-        if(Helper.isRecording()) {
+        if(Helper.isRecording() && !wasRecording) {
+            wasRecording = true;
             initRecorder();
             recordScreen();
-        } else {
+        } else if (!Helper.isRecording() && wasRecording) {
+            wasRecording = false;
             mediaRecorder.stop();
             mediaRecorder.reset();
             stopRecordScreen();
@@ -198,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     private void recordScreen() {
         if(mediaProjection == null) {
+            Helper.togglePlayPause();
             startActivityForResult(mediaProjectionManager.createScreenCaptureIntent(), REQUEST_CODE);
             return;
         }
@@ -219,8 +221,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
 
             videoUri = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                    + new StringBuilder("/JailBreakPong").append(new SimpleDateFormat("dd-MM-yyyy-hh_mm_ss")
-                    .format(new Date())).append(".mp4").toString();
+                    + new StringBuilder("/JailBreakPong").append(".mp4").toString();
 
             mediaRecorder.setOutputFile(videoUri);
             mediaRecorder.setVideoSize(DISPLAY_WIDTH, DISPLAY_HEIGHT);
@@ -242,6 +243,7 @@ public class MainActivity extends AppCompatActivity implements Observer {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+
         if(requestCode != REQUEST_CODE) {
             Toast.makeText(this, "UNK ERROR", Toast.LENGTH_SHORT).show();
             return;
@@ -258,11 +260,10 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
         virtualDisplay = createVirtualDisplay();
         mediaRecorder.start();
+        Helper.togglePlayPause();
     }
 
     private class MediaProjectionCallback extends MediaProjection.Callback {
-        // Ctrl+O
-
         @Override
         public void onStop() {
             if(Helper.isRecording()) {
@@ -276,7 +277,6 @@ public class MainActivity extends AppCompatActivity implements Observer {
     }
 
     private void stopRecordScreen() {
-        Log.d("VideoCapture","VIDEO CAPTURE STOPEED");
         if(virtualDisplay == null) {
             return;
         }
@@ -314,15 +314,8 @@ public class MainActivity extends AppCompatActivity implements Observer {
 
     @Override
     public void update(Observable observable, Object o) {
-        if (!wasRecording && Helper.isRecording()) {    // you were not recording, but you are now, trigger record
-            initRecorder();
-            recordScreen();
-            wasRecording = true;
-        } else if (wasRecording && !Helper.isRecording()) { // you were recording, but not anymore, end it.
-            mediaRecorder.stop();
-            mediaRecorder.reset();
-            stopRecordScreen();
-            wasRecording = false;
+        if (!wasRecording && Helper.isRecording() || wasRecording && !Helper.isRecording()) {    // if toggle was updated, toggle recording
+            startRecording();
         }
     }
 }

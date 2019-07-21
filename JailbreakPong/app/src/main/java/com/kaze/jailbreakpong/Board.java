@@ -1,6 +1,7 @@
 package com.kaze.jailbreakpong;
 import android.content.Context;
 import android.content.res.Resources;
+import android.util.Log;
 import android.widget.FrameLayout;
 
 import androidx.core.content.res.ResourcesCompat;
@@ -320,6 +321,7 @@ public class Board extends Observable {
     }
 
     public void togglePlayPause() {
+        Log.d("BOARD", "togglePlayPause");
         if (state == State.PAUSE) {
             play();
         } else if (state == State.PLAY) {
