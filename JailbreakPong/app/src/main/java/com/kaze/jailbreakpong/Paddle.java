@@ -49,7 +49,6 @@ public class Paddle extends AppCompatImageView implements Observer {
         }
 
     };
-
     public Paddle(Context context, float x, float y, int imgId) {
         super(context);
         init(x, y, imgId);
